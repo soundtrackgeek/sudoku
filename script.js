@@ -3,6 +3,7 @@ class SudokuGame {
         this.board = Array(9).fill().map(() => Array(9).fill(0));
         this.solution = Array(9).fill().map(() => Array(9).fill(0));
         this.selectedCell = null;
+        this.numberCounts = Array(10).fill(0); // Index 0 won't be used
         this.initializeDOM();
         this.setupEventListeners();
         this.newGame();
@@ -38,15 +39,28 @@ class SudokuGame {
 
         // Number pad clicks
         document.querySelectorAll('.num-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                if (!this.selectedCell) return;
-                
-                const value = button.textContent;
-                if (value === '❌') {
+            // Skip if it's the erase button
+            if (button.classList.contains('erase')) {
+                button.addEventListener('click', () => {
+                    if (!this.selectedCell) return;
                     this.setNumber(0);
-                } else {
-                    this.setNumber(parseInt(value));
-                }
+                });
+                return;
+            }
+            
+            // Add data-number attribute and count display
+            const number = parseInt(button.textContent);
+            button.setAttribute('data-number', number);
+            
+            // Add count display
+            const countSpan = document.createElement('span');
+            countSpan.className = 'count';
+            countSpan.textContent = '9';
+            button.appendChild(countSpan);
+            
+            button.addEventListener('click', () => {
+                if (!this.selectedCell || button.disabled) return;
+                this.setNumber(number);
             });
         });
 
@@ -69,6 +83,19 @@ class SudokuGame {
         
         if (this.selectedCell.classList.contains('given')) return;
         
+        // Decrease count for previous number if it existed
+        const previousNum = this.board[row][col];
+        if (previousNum !== 0) {
+            this.numberCounts[previousNum]--;
+            this.updateNumberButton(previousNum);
+        }
+        
+        // Increase count for new number
+        if (num !== 0) {
+            this.numberCounts[num]++;
+            this.updateNumberButton(num);
+        }
+        
         this.board[row][col] = num;
         this.selectedCell.textContent = num || '';
         this.selectedCell.classList.remove('invalid');
@@ -79,6 +106,27 @@ class SudokuGame {
         
         if (this.isBoardFull() && this.isBoardValid()) {
             this.showStatus('Congratulations! You solved the puzzle! 🎉');
+        }
+    }
+
+    updateNumberButton(num) {
+        if (num === 0) return;
+        
+        const button = document.querySelector(`.num-btn[data-number="${num}"]`);
+        if (!button) return;
+        
+        if (this.numberCounts[num] >= 9) {
+            button.classList.add('completed');
+            button.disabled = true;
+        } else {
+            button.classList.remove('completed');
+            button.disabled = false;
+        }
+        
+        // Update the count display
+        const countSpan = button.querySelector('.count');
+        if (countSpan) {
+            countSpan.textContent = 9 - this.numberCounts[num];
         }
     }
 
@@ -242,6 +290,8 @@ class SudokuGame {
 
     newGame() {
         const difficulty = document.getElementById('difficulty').value;
+        // Reset number counts
+        this.numberCounts = Array(10).fill(0);
         this.generatePuzzle(difficulty);
         this.updateBoardDisplay();
         this.showStatus('New game started! Good luck! 🍀');
@@ -255,6 +305,9 @@ class SudokuGame {
 
     updateBoardDisplay() {
         const cells = document.querySelectorAll('.cell');
+        // Reset number counts
+        this.numberCounts = Array(10).fill(0);
+        
         cells.forEach(cell => {
             const row = parseInt(cell.dataset.row);
             const col = parseInt(cell.dataset.col);
@@ -265,10 +318,16 @@ class SudokuGame {
             
             if (value !== 0) {
                 cell.classList.add('given');
+                this.numberCounts[value]++;
             } else {
                 cell.classList.remove('given');
             }
         });
+        
+        // Update all number buttons
+        for (let i = 1; i <= 9; i++) {
+            this.updateNumberButton(i);
+        }
     }
 
     showStatus(message) {
