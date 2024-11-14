@@ -4,6 +4,8 @@ class SudokuGame {
         this.solution = Array(9).fill().map(() => Array(9).fill(0));
         this.selectedCell = null;
         this.numberCounts = Array(10).fill(0); // Index 0 won't be used
+        this.timerInterval = null;
+        this.seconds = 0;
         this.initializeDOM();
         this.setupEventListeners();
         this.newGame();
@@ -12,6 +14,7 @@ class SudokuGame {
     initializeDOM() {
         this.boardElement = document.getElementById('board');
         this.statusElement = document.getElementById('status');
+        this.timerElement = document.getElementById('timer');
         this.createBoard();
     }
 
@@ -105,7 +108,8 @@ class SudokuGame {
         }
         
         if (this.isBoardFull() && this.isBoardValid()) {
-            this.showStatus('Congratulations! You solved the puzzle! 🎉');
+            this.stopTimer();
+            this.showStatus(`Congratulations! You solved the puzzle in ${this.formatTime(this.seconds)}! 🎉`);
         }
     }
 
@@ -288,18 +292,54 @@ class SudokuGame {
         return null;
     }
 
+    startTimer() {
+        // Clear any existing timer
+        this.stopTimer();
+        this.seconds = 0;
+        this.updateTimerDisplay();
+        
+        this.timerInterval = setInterval(() => {
+            this.seconds++;
+            this.updateTimerDisplay();
+        }, 1000);
+    }
+
+    stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+        this.timerElement.classList.add('paused');
+    }
+
+    updateTimerDisplay() {
+        const minutes = Math.floor(this.seconds / 60);
+        const remainingSeconds = this.seconds % 60;
+        this.timerElement.textContent = 
+            `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        this.timerElement.classList.remove('paused');
+    }
+
+    formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+
     newGame() {
         const difficulty = document.getElementById('difficulty').value;
         // Reset number counts
         this.numberCounts = Array(10).fill(0);
         this.generatePuzzle(difficulty);
         this.updateBoardDisplay();
+        this.startTimer();
         this.showStatus('New game started! Good luck! 🍀');
     }
 
     solvePuzzle() {
         this.board = this.solution.map(row => [...row]);
         this.updateBoardDisplay();
+        this.stopTimer();
         this.showStatus('Puzzle solved! Try another one! 🎯');
     }
 

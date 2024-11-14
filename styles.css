@@ -172,6 +172,23 @@ select {
     min-height: 1.5rem;
 }
 
+.timer {
+    background: #3498db;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    font-family: monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+}
+
+.timer.paused {
+    background: #95a5a6;
+}
+
 @media (max-width: 500px) {
     .container {
         padding: 1rem;
