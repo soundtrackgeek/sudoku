@@ -15,11 +15,12 @@ body {
 
 .container {
     background: white;
-    padding: 2rem;
+    padding: 2.5rem;
     border-radius: 15px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
+    max-width: 650px;
     width: 95%;
+    margin: 2rem auto;
 }
 
 h1 {
@@ -30,18 +31,26 @@ h1 {
 }
 
 .game-controls {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
-    margin-bottom: 1.5rem;
-    justify-content: center;
+    margin-bottom: 2rem;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 10px;
 }
 
 button, select {
-    padding: 0.5rem 1rem;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    height: 2.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 1rem;
     transition: all 0.3s ease;
 }
 
@@ -58,6 +67,11 @@ button:hover {
 select {
     background: #ecf0f1;
     color: #2c3e50;
+    padding-right: 2rem;
+}
+
+select:hover {
+    background: #bdc3c7;
 }
 
 .board {
@@ -67,7 +81,8 @@ select {
     background: #34495e;
     padding: 1px;
     border-radius: 5px;
-    margin-bottom: 1.5rem;
+    margin: 2rem auto;
+    max-width: 500px;
 }
 
 .cell {
@@ -111,13 +126,20 @@ select {
 .number-pad {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 0.5rem;
-    margin-top: 1rem;
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
 }
 
 .num-btn {
-    padding: 0.8rem;
+    padding: 1rem 0.8rem;
     font-size: 1.2rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: #ecf0f1;
     color: #2c3e50;
     position: relative;
@@ -357,19 +379,52 @@ select {
 
 @media (max-width: 500px) {
     .container {
-        padding: 1rem;
+        padding: 1.2rem;
+        width: 98%;
+        margin: 0.5rem auto;
+    }
+    
+    .game-controls {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0.8rem;
+        gap: 0.8rem;
+    }
+
+    #new-game {
+        grid-column: 1;
+    }
+
+    #difficulty {
+        grid-column: 2;
+    }
+
+    #solve {
+        grid-column: 1;
+    }
+
+    .show-leaderboard {
+        grid-column: 2;
+    }
+    
+    .timer {
+        grid-column: 1 / -1 !important;
+        margin: 0.5rem 0;
+    }
+    
+    .number-pad {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.5rem;
+        padding: 0.8rem;
+    }
+
+    .num-btn {
+        padding: 0.8rem 0.5rem;
+        font-size: 1rem;
+        height: 2.5rem;
     }
     
     h1 {
-        font-size: 2rem;
-    }
-    
-    .cell {
-        font-size: 1rem;
-    }
-    
-    .num-btn {
-        font-size: 1rem;
-        padding: 0.5rem;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
     }
 }
