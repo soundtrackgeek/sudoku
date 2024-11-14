@@ -3,9 +3,10 @@ class SudokuGame {
         this.board = Array(9).fill().map(() => Array(9).fill(0));
         this.solution = Array(9).fill().map(() => Array(9).fill(0));
         this.selectedCell = null;
-        this.numberCounts = Array(10).fill(0); // Index 0 won't be used
+        this.numberCounts = Array(10).fill(0);
         this.timerInterval = null;
         this.seconds = 0;
+        this.leaderboard = this.loadLeaderboard();
         this.initializeDOM();
         this.setupEventListeners();
         this.newGame();
@@ -15,20 +16,9 @@ class SudokuGame {
         this.boardElement = document.getElementById('board');
         this.statusElement = document.getElementById('status');
         this.timerElement = document.getElementById('timer');
+        this.namePopup = document.getElementById('name-popup');
+        this.leaderboardPopup = document.getElementById('leaderboard-popup');
         this.createBoard();
-    }
-
-    createBoard() {
-        this.boardElement.innerHTML = '';
-        for (let i = 0; i < 9; i++) {
-            for (let j = 0; j < 9; j++) {
-                const cell = document.createElement('div');
-                cell.classList.add('cell');
-                cell.dataset.row = i;
-                cell.dataset.col = j;
-                this.boardElement.appendChild(cell);
-            }
-        }
     }
 
     setupEventListeners() {
@@ -70,6 +60,20 @@ class SudokuGame {
         // Game controls
         document.getElementById('new-game').addEventListener('click', () => this.newGame());
         document.getElementById('solve').addEventListener('click', () => this.solvePuzzle());
+        
+        // Leaderboard controls
+        document.getElementById('show-leaderboard').addEventListener('click', () => this.showLeaderboard());
+        document.getElementById('close-leaderboard').addEventListener('click', () => this.hideLeaderboard());
+        document.getElementById('submit-score').addEventListener('click', () => this.submitScore());
+        
+        // Leaderboard tabs
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                this.displayLeaderboard(e.target.dataset.difficulty);
+            });
+        });
     }
 
     selectCell(cell) {
@@ -110,6 +114,7 @@ class SudokuGame {
         if (this.isBoardFull() && this.isBoardValid()) {
             this.stopTimer();
             this.showStatus(`Congratulations! You solved the puzzle in ${this.formatTime(this.seconds)}! 🎉`);
+            this.showNamePopup();
         }
     }
 
@@ -372,6 +377,91 @@ class SudokuGame {
 
     showStatus(message) {
         this.statusElement.textContent = message;
+    }
+
+    loadLeaderboard() {
+        const saved = localStorage.getItem('sudokuLeaderboard');
+        return saved ? JSON.parse(saved) : {
+            easy: [],
+            medium: [],
+            hard: []
+        };
+    }
+
+    saveLeaderboard() {
+        localStorage.setItem('sudokuLeaderboard', JSON.stringify(this.leaderboard));
+    }
+
+    showNamePopup() {
+        const difficulty = document.getElementById('difficulty').value;
+        const completionMessage = document.getElementById('completion-message');
+        completionMessage.textContent = `You completed the ${difficulty} puzzle in ${this.formatTime(this.seconds)}!`;
+        this.namePopup.classList.add('active');
+        document.getElementById('player-name').focus();
+    }
+
+    hideNamePopup() {
+        this.namePopup.classList.remove('active');
+        document.getElementById('player-name').value = '';
+    }
+
+    showLeaderboard() {
+        this.leaderboardPopup.classList.add('active');
+        const activeTab = document.querySelector('.tab-btn.active');
+        this.displayLeaderboard(activeTab.dataset.difficulty);
+    }
+
+    hideLeaderboard() {
+        this.leaderboardPopup.classList.remove('active');
+    }
+
+    submitScore() {
+        const name = document.getElementById('player-name').value.trim();
+        if (!name) {
+            alert('Please enter your name!');
+            return;
+        }
+
+        const difficulty = document.getElementById('difficulty').value;
+        const score = {
+            name,
+            time: this.seconds,
+            date: new Date().toISOString()
+        };
+
+        this.leaderboard[difficulty].push(score);
+        this.leaderboard[difficulty].sort((a, b) => a.time - b.time);
+        this.leaderboard[difficulty] = this.leaderboard[difficulty].slice(0, 10); // Keep top 10
+        
+        this.saveLeaderboard();
+        this.hideNamePopup();
+        this.showLeaderboard();
+    }
+
+    displayLeaderboard(difficulty) {
+        const leaderboardList = document.querySelector('.leaderboard-list');
+        const scores = this.leaderboard[difficulty];
+        
+        leaderboardList.innerHTML = scores.length ? scores.map((score, index) => `
+            <div class="leaderboard-entry">
+                <div class="rank">${index + 1}</div>
+                <div class="name">${score.name}</div>
+                <div class="time">${this.formatTime(score.time)}</div>
+            </div>
+        `).join('') : '<div class="no-scores">No scores yet!</div>';
+    }
+
+    createBoard() {
+        this.boardElement.innerHTML = '';
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 9; j++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.row = i;
+                cell.dataset.col = j;
+                this.boardElement.appendChild(cell);
+            }
+        }
     }
 }
 

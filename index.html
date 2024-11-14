@@ -18,6 +18,7 @@
             </select>
             <button id="solve">Solve</button>
             <div id="timer" class="timer">00:00</div>
+            <button id="show-leaderboard" class="show-leaderboard">🏆 Leaderboard</button>
         </div>
         <div id="board" class="board"></div>
         <div class="status-message" id="status"></div>
@@ -34,6 +35,36 @@
             <button class="num-btn erase">❌</button>
         </div>
     </div>
+
+    <!-- Name Entry Popup -->
+    <div id="name-popup" class="popup">
+        <div class="popup-content">
+            <h2>🎉 Congratulations!</h2>
+            <p id="completion-message"></p>
+            <div class="input-group">
+                <label for="player-name">Enter your name:</label>
+                <input type="text" id="player-name" maxlength="20" placeholder="Your name">
+            </div>
+            <button id="submit-score">Submit Score</button>
+        </div>
+    </div>
+
+    <!-- Leaderboard Popup -->
+    <div id="leaderboard-popup" class="popup">
+        <div class="popup-content">
+            <h2>🏆 Leaderboard</h2>
+            <div class="difficulty-tabs">
+                <button class="tab-btn active" data-difficulty="easy">Easy</button>
+                <button class="tab-btn" data-difficulty="medium">Medium</button>
+                <button class="tab-btn" data-difficulty="hard">Hard</button>
+            </div>
+            <div class="leaderboard-list">
+                <!-- Scores will be inserted here -->
+            </div>
+            <button id="close-leaderboard">Close</button>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
