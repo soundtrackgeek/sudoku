@@ -127,8 +127,12 @@ class SudokuGame {
     }
 
     generatePuzzle(difficulty) {
-        // Initialize a solved board
-        this.solveSudoku(this.solution);
+        // Clear the boards
+        this.board = Array(9).fill().map(() => Array(9).fill(0));
+        this.solution = Array(9).fill().map(() => Array(9).fill(0));
+        
+        // Generate a valid solved board
+        this.generateSolvedBoard();
         
         // Copy solution to current board
         this.board = this.solution.map(row => [...row]);
@@ -152,14 +156,45 @@ class SudokuGame {
         }
     }
 
+    generateSolvedBoard() {
+        // Fill diagonal 3x3 boxes first (they are independent of each other)
+        for (let i = 0; i < 9; i += 3) {
+            this.fillBox(i, i);
+        }
+        
+        // Fill the rest of the board
+        this.solveSudoku(this.solution);
+    }
+
+    fillBox(row, col) {
+        const numbers = this.shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        let index = 0;
+        
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                this.solution[row + i][col + j] = numbers[index];
+                index++;
+            }
+        }
+    }
+
+    shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
     solveSudoku(board) {
         const empty = this.findEmpty(board);
         if (!empty) return true;
         
         const [row, col] = empty;
+        const numbers = this.shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
         
-        for (let num = 1; num <= 9; num++) {
-            if (this.isValidMove(row, col, num)) {
+        for (let num of numbers) {
+            if (this.isValidPlacement(board, row, col, num)) {
                 board[row][col] = num;
                 
                 if (this.solveSudoku(board)) {
@@ -171,6 +206,29 @@ class SudokuGame {
         }
         
         return false;
+    }
+
+    isValidPlacement(board, row, col, num) {
+        // Check row
+        for (let i = 0; i < 9; i++) {
+            if (board[row][i] === num) return false;
+        }
+        
+        // Check column
+        for (let i = 0; i < 9; i++) {
+            if (board[i][col] === num) return false;
+        }
+        
+        // Check 3x3 box
+        const boxRow = Math.floor(row / 3) * 3;
+        const boxCol = Math.floor(col / 3) * 3;
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (board[boxRow + i][boxCol + j] === num) return false;
+            }
+        }
+        
+        return true;
     }
 
     findEmpty(board) {
