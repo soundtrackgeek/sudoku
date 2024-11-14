@@ -1,0 +1,164 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 95%;
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 2.5rem;
+}
+
+.game-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+}
+
+button, select {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+button {
+    background: #3498db;
+    color: white;
+}
+
+button:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+select {
+    background: #ecf0f1;
+    color: #2c3e50;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 1px;
+    background: #34495e;
+    padding: 1px;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+}
+
+.cell {
+    aspect-ratio: 1;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.cell:hover {
+    background: #f0f0f0;
+}
+
+.cell.selected {
+    background: #d5e8f7;
+}
+
+.cell.given {
+    color: #7f8c8d;
+}
+
+.cell.invalid {
+    color: #e74c3c;
+}
+
+.cell:nth-child(3n) {
+    margin-right: 2px;
+}
+
+.cell:nth-child(n+19):nth-child(-n+27),
+.cell:nth-child(n+46):nth-child(-n+54) {
+    border-bottom: 2px solid #34495e;
+}
+
+.number-pad {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.num-btn {
+    padding: 0.8rem;
+    font-size: 1.2rem;
+    background: #ecf0f1;
+    color: #2c3e50;
+}
+
+.num-btn:hover {
+    background: #bdc3c7;
+}
+
+.num-btn.erase {
+    grid-column: span 2;
+    background: #e74c3c;
+    color: white;
+}
+
+.num-btn.erase:hover {
+    background: #c0392b;
+}
+
+.status-message {
+    text-align: center;
+    margin: 1rem 0;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    min-height: 1.5rem;
+}
+
+@media (max-width: 500px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .cell {
+        font-size: 1rem;
+    }
+    
+    .num-btn {
+        font-size: 1rem;
+        padding: 0.5rem;
+    }
+}
